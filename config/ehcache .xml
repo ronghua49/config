@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ehcache>
+	<!--tmpdir： 当前登录用户的临时文件夹  -->
+	<diskStore path="java.io.tempdir"/>
+	
+	<!--name:缓存名，在建立缓存区对象时使用
+		 timeToIdleSeconds:闲置时间 
+		 timeToLiveSeconds:存活时间
+		 maxElementsInMemory:缓存的最大字节数
+		 eternal：是否保持数据不变 -->
+	<cache name="user"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="10" 
+		timeToLiveSeconds="10" 
+		overflowToDisk="true"
+	/>
+	
+	<cache name="film"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="10" 
+		timeToLiveSeconds="10" 
+		overflowToDisk="true"
+	/>
+	
+	<cache name="type"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="10" 
+		timeToLiveSeconds="10" 
+		overflowToDisk="true"
+	/>
+</ehcache>

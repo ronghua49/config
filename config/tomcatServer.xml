@@ -1,0 +1,18 @@
+<!-- 复制host节点 修改name 属性自己设置域名导致-->
+<Host name="manager.movie.com" appBase="webapps"
+unpackWARs="true" autoDeploy="true">
+<!--t添加context节点-->
+<Context path='/' docBase='movie-manager' debug="0" reloadable="true"/>
+<!-- SingleSignOn valve, share authentication between web applications
+Documentation at: /docs/config/valve.html -->
+<!--
+<Valve className="org.apache.catalina.authenticator.SingleSignOn" />
+-->
+<!-- Access log processes all example.
+Documentation at: /docs/config/valve.html
+Note: The pattern used is equivalent to using pattern="common" -->
+<Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+prefix="localhost_access_log" suffix=".txt"
+pattern="%h %l %u %t "%r" %s %b" />
+</Host>
+ 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+     "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!-- 连接数据库jar包的位置 -->
+    <classPathEntry location="D:\javaEE26\document\jar\databasejar\mysql-connector-java-5.1.44\mysql-connector-java-5.1.44-bin.jar"/>
+    <!--
+    id: 自定义
+    targetRuntime : MyBatis3Simple 生成简单的CRUD语句
+    MyBatis3 生成带Example的CRUD语句
+    -->
+    <context id="myConfig" targetRuntime="MyBatis3">
+        <!--去掉自动产生的注释-->
+        <commentGenerator>
+            <!-- 是否去掉自动生成的注释 true是 false 否 -->
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+            <!-- 连接数据库的信息 -->
+        </commentGenerator>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql:///douban"
+                        userId="root" password="root"/>
+        <!-- POJO -->
+        <javaModelGenerator targetPackage="com.haohua.entity" targetProject="src/main/java"/>
+        <!--XML映射文件-->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
+        <!--Mapper接口-->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.haohua.mapper"
+                             targetProject="src/main/java"/>
+        <!--要映射的表名-->
+        <table tableName="t_reply" domainObjectName="Reply" enableSelectByExample="true"/>
+    </context>
+</generatorConfiguration>
