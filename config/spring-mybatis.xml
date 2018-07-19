@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+       ">
+    <!--数据源的管理和赋值-->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!--读取配置文件-->
+    <context:property-placeholder location="classpath:config.properties"/>
+    <!--sqlsessionFactory的管理和属性赋值-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--别名的赋值-->
+        <property name="typeAliasesPackage" value="com.haohua.pojo"/>
+        <!--Mapper.xml文件位置的赋值-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+        <!--为属性Configuration 类中的其他属性赋值-->
+        <property name="configuration">
+            <bean class="org.apache.ibatis.session.Configuration">
+                <property name="mapUnderscoreToCamelCase" value="true"/>
+            </bean>
+        </property>
+    </bean>
+    <!--自动扫描 mapper接口  生成动态代理对象并放入容器-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.haohua.mapper"/>
+    </bean>
+    <!--spring事务模板和依赖-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--开启基于注解的事务-->
+    <tx:annotation-driven/>
+    <!--注解的自动扫描开启-->
+    <context:component-scan base-package="com.haohua"/>
+</beans>
