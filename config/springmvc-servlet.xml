@@ -24,7 +24,20 @@
         <!--跳转值的后缀-->
         <property name="suffix" value=".jsp"/>
     </bean>
+    <!--表示页面可直接访问静态资源-->
+    <mvc:default-servlet-handler/>
 
+    <!--文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1048576"/>
+    </bean>
+    <!--拦截器配置-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.haohua.controller.MyInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
 
 
