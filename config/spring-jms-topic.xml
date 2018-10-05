@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--1. 配置ActiveMQ ConnectionFactory-->
+    <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+    </bean>
+
+    <!--2. Spring适配的连接工厂-->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+    </bean>
+
+    <!-- 3. 配置jmsTemplate-->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="defaultDestination" ref="destination"/>
+    </bean>
+<!--创建Topic主体-->
+    <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg name="name" value="spring-topic"/>
+    </bean>
+
+  <!--  &lt;!&ndash;配置主题的监听器&ndash;&gt;
+    <bean id="topicListener" class="com.haohua.erp.listener.TopicListener"/>
+
+    &lt;!&ndash;配置监听器容器&ndash;&gt;
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        &lt;!&ndash;依赖spring链接工厂类 链接中间件&ndash;&gt;
+        <property name="connectionFactory" ref="connectionFactory"/>
+        &lt;!&ndash;链接哪个主体名&ndash;&gt;
+        <property name="destination" ref="destination"/>
+        &lt;!&ndash;订阅者为谁，接受到消息后的行为&ndash;&gt;
+        <property name="messageListener" ref="topicListener"/>
+    </bean>
+-->
+    <!-- 开启扫描-->
+    <context:component-scan base-package="com.haohua.erp"/>
+    <!--基于注解的Topic接收者-->
+    <jms:annotation-driven container-factory="jmsListenerContainerFactory"/>
+
+    <!--开启基于注解的JMS接收模式-->
+    <bean id="jmsListenerContainerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="concurrency" value="5-15"/>
+        <!--监听发布/订阅模式-->
+        <property name="pubSubDomain" value="true"/>
+    </bean>
+
+
+
+</beans>

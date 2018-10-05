@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--配置ActiveMQ 中间件类和地址-->
+    <bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <!--配置重试机制的类-->
+        <property name="redeliveryPolicy" ref="redeliveryPolicy"/>
+    </bean>
+    <!--Spring适配的连接工厂和中间件类对接-->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+        <property name="targetConnectionFactory" ref="activeMQConnectionFactory"/>
+    </bean>
+    <!--配置queue的JMSTemplate-->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate" >
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <!--默认的目的地名称d队列名 可以省略，在发送时指定-->
+        <property name="defaultDestinationName" value="erp-fix-web"/>
+        <!--2表示客户端签收模式-->
+        <property name="sessionAcknowledgeMode" value="2"/>
+    </bean>
+    <!--设置多个消费者监听器-->
+    <!--4. 配置消费者的监听器-->
+    <!--<bean id="consumerListener" class="com.haohua.erp.listener.ConsumerListener"/>
+    <bean id="QueueListener" class="com.haohua.erp.listener.QueueListener"/>
+    <bean id="RedeliveryQueueListener" class="com.haohua.erp.listener.RedeliveryQueueListener"/>-->
+
+
+    <!--5. 配置多个监听器-->
+    <!--<jms:listener-container acknowledge="auto" connection-factory="connectionFactory" concurrency="3-10">
+        <jms:listener destination="erp-fix-web" ref="consumerListener"/>
+        <jms:listener destination="erp-fix-web" ref="QueueListener"/>
+        <jms:listener destination="erp-fix-web" ref="RedeliveryQueueListener"/>
+    </jms:listener-container>-->
+    <context:component-scan base-package="com.haohua.erp"/>
+
+    <!--使用注解模式接受消息-->
+    <jms:annotation-driven container-factory="jmsListenerContainerFactory"/>
+
+    <bean id="jmsListenerContainerFactory" class="org.springframework.jms.config.DefaultJmsListenerContainerFactory">
+        <!--依赖spring和中间件的连接适配 类-->
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <!--线程池的配置，控制在3-10个线程-->
+        <property name="concurrency" value="3-10"/>
+    </bean>
+
+
+    <!--重试机制-->
+    <bean id="redeliveryPolicy" class="org.apache.activemq.RedeliveryPolicy">
+        <!--重试次数-->
+        <property name="maximumRedeliveries" value="3"/>
+        <!--首次重试的延迟时间-->
+        <property name="initialRedeliveryDelay" value="3000"/>
+        <!--每次重试的延迟时间-->
+        <property name="redeliveryDelay" value="3000"/>
+    </bean>
+
+
+
+
+</beans>
