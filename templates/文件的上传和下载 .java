@@ -138,5 +138,42 @@ public class Download extends BaseServlet {
 	}
 }
 
+//springmvc的上传文件到服务器磁盘
+@PostMapping("/img/upload")
+    public String uploadItem(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ServletException {
+        System.out.println(file.getSize());//获得字节数
+        System.out.println(file.getName());//获得文件的表单name属性
+        String originalFilename = file.getOriginalFilename();//文件真名
+        String fileName = originalFilename;//UUID.randomUUID().toString() + originalFilename.substring(originalFilename.lastIndexOf("."));
+        File uploadFile = new File(ConfigUtil.getProperties("upload.path"));
+		if(!uploadFile.isExist){
+			uploadFile.mkdirs();
+		}
+        
+        InputStream in = file.getInputStream();
+        OutputStream out = new FileOutputStream(new File(uploadFile, fileName));
+        IOUtils.copy(in, out);
+		out.flush();
+        out.close();
+        in.close();
+
+        return "order/success";
+    }
+	
+//springmvc的文件下载
+
+ @RequestMapping("/download/{fileName:.*}")
+    public ResponseEntity<byte[]> download(HttpServletRequest request, @PathVariable String fileName, HttpServletResponse response) throws IOException {
+        File file = new File(ConfigUtil.getProperties("upload.path"), "\\" + fileName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        response.setCharacterEncoding("UTF-8");
+        //设置下载框的文件名显示，fileName以ISO8859-1编码 可以显示中文
+        headers.setContentDispositionFormData("attachment", new String(fileName.getBytes("utf-8"), "ISO8859-1"));
+        System.out.println(fileName);
+        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),
+                headers, HttpStatus.CREATED);
+    }	
+
 
 
