@@ -1,0 +1,72 @@
+在/usr/local/nginx/vhost下新建代理或者反向代理的虚拟主机conf配置文件
+
+<!--反向代理虚拟主机的配置-->
+server {
+<!--nginx虚拟主机的端口号-->
+listen 80;
+<!--nginx虚拟主机代理的域名-->
+server_name com.nginx.tms;
+	location / {
+	#被代理服务器的地址
+	proxy_pass http://tms;
+	#nginx服务器与后端服务器建立连接的超时时间，默认为60s
+	proxy_connect_timeout 60;
+	#nginx服务器向后端服务器发出read请求后的超时时间，默认为60s
+	proxy_read_timeout 60;
+	#nginx服务器向后端服务器发出write请求后的超时时间，默认为60
+	proxy_send_timeout 60;
+	#nginx获取服务器接收到客户端请求的请求头信息，将新的请求头发送给被代理服务器
+	proxy_set_header Host $host;
+	proxy_set_header X-Real-IP $remote_addr;
+	}
+}
+<!--被代服务器的ip地址和端口号-->
+upstream tms {
+	ip_hash;//保持回话功能，将同一个回话的多次请求绑定到同一个服务器，不可weight一起使用
+	#server 192.168.2.111:80;
+	#server 192.168.2.111:8090;
+	#server 192.168.2.111:8091;
+	<!--负载均衡-->
+	server 192.168.1.4:80 weight=5;
+	server 192.168.1.4:8090 weight=10 fail_timeout=5s max_fails=10;//5秒未响应标记失败，10为最大失败次数，标记为down
+	server 192.168.1.4:8091 backup;//备份，当有服务器为down状态时，此服务器工作
+}
+
+
+
+<!--正向代理-->
+
+server{
+	listen   8081;
+	server_name com.xyz;
+	charset UTF-8;
+	access_log  logs/vhost/com.xyz.access.log  ;
+	//表示访问/movie时，会从/var/html/movie 下的index.html响应
+	location /movie {
+            root   /var/html;
+            index  index.html index.htm;
+    }
+	//访问	/image/1.png时，会从/var/html/image/1.png 响应。
+	location /image {
+		root /var/html;
+	}
+	
+   #location ~ \.jpg$ {
+	#	root /var/html/image;
+	    
+	#}
+	#访问以image、 css、 js开头的URL时去/var/html/static路径中查找image、 css、 js子文件夹的资源响应请求
+	location ~ ^/(image|css|js)/ {
+		root /var/html/static;
+		#关闭访问日志的记录
+		access_log off;
+		#缓存30天
+		expires 30d;
+		}
+
+	
+}
+
+
+
+
