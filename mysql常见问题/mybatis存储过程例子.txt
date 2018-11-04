@@ -1,0 +1,69 @@
+<!--存储过程执行多条sql语句，只有入参情况-->
+delimiter // 
+CREATE PROCEDURE saveOrder(
+	IN orderMoney DECIMAL(8,2),
+	IN state CHAR,
+	IN carId INT,
+	IN serviceTypeId INT,
+	IN employeeId INT
+)
+BEGIN
+	INSERT INTO `order`(
+		order_money,
+		state,
+		car_id,
+		service_type_id
+	)
+VALUES
+	(
+		orderMoney,
+		state,
+		carId,
+		serviceTypeId
+	) ;
+insert into order_employee (employee_id,order_id) VALUES (employeeId,(select id from `order` ORDER BY id desc limit 0,1));
+END //
+delimiter;
+
+
+<!--入参和出参-->
+
+DELIMITER //
+CREATE PROCEDURE ordertotal(
+IN serviceTypeId INT,/*IN代表传入参数*/
+OUT total DECIMAL(8,2)
+)
+BEGIN
+SELECT SUM(order_money) INTO total FROM `order` WHERE service_type_id=serviceTypeId ;
+END//
+DELIMITER;
+
+调用
+CALL ordertotal(1,@total)
+SELECT @total
+
+<!--mapper java代码,只有入参情况-->
+void saveOrder(@Param("orderMoney") BigDecimal orderMoney, @Param("state")String state,@Param("carId") Integer carId, @Param("serviceTypeId")Integer serviceTypeId,@Param("employeeId") int employeeId);﻿​
+//mapper.xml代码，参数表示按顺序赋值给存储过程
+<select id="saveOrder" statementType="CALLABLE">
+    {CALL saveOrder(
+    #{orderMoney, mode=IN, jdbcType=DECIMAL},
+    #{state, mode=IN, jdbcType=CHAR},
+    #{carId, mode=IN, jdbcType=INTEGER},
+    #{serviceTypeId, mode=IN, jdbcType=INTEGER},
+    #{employeeId, mode=IN, jdbcType=INTEGER}
+    )}
+
+	
+	<!--mapper java代码有入参和出参-->
+void sumOrderMoney(Map<String,Object> paramMap);
+﻿​//mapper.xml代码 ，返回值写在原来map的出参属性中 
+<select id="sumOrderMoney"  statementType="CALLABLE" parameterType="java.util.Map">
+    {CALL ordertotal(
+    #{serviceTypeId, mode=IN, jdbcType=INTEGER},
+    #{total,mode=OUT,jdbcType=DECIMAL}
+    )
+    }
+  </select>
+
+  获得返回值 paramMap.get("total");

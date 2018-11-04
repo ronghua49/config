@@ -140,24 +140,28 @@ public class Download extends BaseServlet {
 
 //springmvc的上传文件到服务器磁盘
 @PostMapping("/img/upload")
-    public String uploadItem(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, ServletException {
+    public String uploadItem(@RequestParam("file") MultipartFile file, Query vo) throws IOException, ServletException {
         System.out.println(file.getSize());//获得字节数
         System.out.println(file.getName());//获得文件的表单name属性
+		
         String originalFilename = file.getOriginalFilename();//文件真名
-        String fileName = originalFilename;//UUID.randomUUID().toString() + originalFilename.substring(originalFilename.lastIndexOf("."));
-        File uploadFile = new File(ConfigUtil.getProperties("upload.path"));
-		if(!uploadFile.isExist){
-			uploadFile.mkdirs();
-		}
-        
-        InputStream in = file.getInputStream();
-        OutputStream out = new FileOutputStream(new File(uploadFile, fileName));
-        IOUtils.copy(in, out);
-		out.flush();
-        out.close();
-        in.close();
-
-        return "order/success";
+        String fileName = originalFilename;//UUID.randomUUID().toString().replaceAll("-","") + originalFilename.substring(originalFilename.lastIndexOf("."));
+		//上传图片到磁盘
+		file.transferTo()(new File (ConfigUtil.getProperties("upload.path")+fileName));
+		
+       // File uploadFile = new File(ConfigUtil.getProperties("upload.path"));
+		//if(!uploadFile.isExist){
+			//uploadFile.mkdirs();
+		//}
+      //  InputStream in = file.getInputStream();
+        //OutputStream out = new FileOutputStream(new File(uploadFile, fileName));
+        //IOUtils.copy(in, out);
+		//out.flush();
+        //out.close();
+        //in.close();
+		//保存表单（包含图片名）到数据库
+		//重定向到页面，显示该商品和图片信息
+        return "redirect:order/items?id="+vo.getItems.getId();
     }
 	
 //springmvc的文件下载

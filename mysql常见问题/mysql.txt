@@ -1,0 +1,2 @@
+linux 下mysql 命令新建用户
+insert into mysql.user(Host,User,authentication_string,ssl_cipher,x509_issuer,x509_subject) values ('192.168.1.3','win_user',999,'','','');
