@@ -2,7 +2,7 @@
 <Host name="manager.movie.com" appBase="webapps"
 unpackWARs="true" autoDeploy="true">
 <!--t添加context节点-->
-<Context path='/' docBase='movie-manager' debug="0" reloadable="true"/>
+<Context path='' docBase='movie-manager' debug="0" reloadable="true"/>
 <!-- SingleSignOn valve, share authentication between web applications
 Documentation at: /docs/config/valve.html -->
 <!--
