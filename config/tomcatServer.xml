@@ -2,7 +2,7 @@
 <Host name="manager.movie.com" appBase="webapps"
 unpackWARs="true" autoDeploy="true">
 <!--t添加context节点-->
-<Context path='/' docBase='movie-manager' debug="0" reloadable="true"/>
+<Context path='' docBase='movie-manager' debug="0" reloadable="true"/>
 <!-- SingleSignOn valve, share authentication between web applications
 Documentation at: /docs/config/valve.html -->
 <!--
@@ -15,6 +15,9 @@ Note: The pattern used is equivalent to using pattern="common" -->
 prefix="localhost_access_log" suffix=".txt"
 pattern="%h %l %u %t "%r" %s %b" />
 </Host>
+<!--一个tomcat两个端口部署不同项目-->
+复制service  name= Catalina2  
+更改前两个端口 保证和前一个service节点不重复
  
  <!--一个tomcat一个端口，部署两个不同的web。域名绑定同一个ip,访问不同域名，会定位到不同的项目-->
  <Host name="www.51aite.com" appBase="webapps" unpackWARs="true" autoDeploy="true" xmlValidation="false" xmlNamespaceAware="false">
