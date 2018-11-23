@@ -1,0 +1,135 @@
+body{
+    background-color: #ececec;
+    font-family: Avenir,"Microsoft Yahei","Hiragino Sans GB","Microsoft Sans Serif","WenQuanYi Micro Hei",sans-serif;
+	height:auto
+}
+
+.modal-header {
+	padding:15px 25px;
+}
+
+.modal-body {
+	padding:45px 15px;
+}
+
+.modal-footer {
+	padding:15px 25px;
+}
+
+.article-span {
+	background-color: #fff;
+	margin-bottom: 20px;
+    box-shadow: 1px 1px 2px #ccc;
+}
+
+.media {
+	margin-top: 10px;
+}
+
+.article {
+	padding:20px;
+	border-bottom:1px solid #e0e0e0;
+}
+
+
+.media-heading {
+	font-size: 20px;
+}
+
+.time{
+	font-size: 16px;
+	color: grey;
+	margin-left: 20px;
+}
+
+.meta span {
+	margin-right: 8px;
+}
+
+
+.article p{
+	margin-top: 5px;
+	font-size:16px;
+	
+}
+
+.data span a{
+	color:grey;
+}
+
+
+.topic-type{
+	
+}
+.topic-type .active a{
+	background-color: #445;
+	color: #fff;
+}
+.topic-type li a {
+	font-size: 12px;
+	padding: 5px 10px;
+	text-decoration: none;
+	border-radius: 5px;
+}
+.topic-head{
+	padding: 0px 15px;
+	border-bottom: 1px solid #eaeaea;
+	position: relative;
+}
+
+.topic-head .title{
+	font-size: 24px;
+	color: #445;
+	font-weight: normal;
+	margin:5px 0px;
+	padding-right:75px;
+}
+.topic-head .topic-msg{
+	font-family: "Georgia", "Xin Gothic", "Hiragino Sans GB", "Droid Sans Fallback", "Microsoft YaHei", sans-serif;;
+}
+.topic-head .topic-msg a{
+	color: #445;
+	text-decoration: none;
+}
+.topic-body{
+	padding: 15px;
+	line-height:1.5;
+	text-align: justify;
+}
+.topic-toolbar{
+	height: 35px;
+	line-height:35px;
+	background-color: #e8e9ed;
+	font-size: 12px;
+	padding: 0px 15px;
+}
+.topic-toolbar a{
+	text-decoration: none;
+	color: #0e0e0e;
+}
+.box-padding{
+	padding: 20px;
+}
+.box{
+	border-radius: 0;
+	box-shadow: 0 -1px 0 #e5e5e5,0 0 2px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.24);
+	border-bottom: none;
+	background-color: #fff;
+	color: #212121;
+}
+.talk-item{
+	border-bottom: 1px solid #eaeaea;
+	padding: 10px 20px;
+	font-size: 16px;
+}
+.talk-table{
+	height: 30px;
+	width: 100%;
+	line-height: 30px;
+}
+.talk-item .avatar{
+	border-radius: 50%;
+}
+.talk-item a{
+	color:#778087;
+}
