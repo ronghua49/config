@@ -1,4 +1,5 @@
 在/usr/local/nginx/vhost下新建代理或者反向代理的虚拟主机conf配置文件
+(需要在主配置文件 inculd  /usr/local/nginx/vhost/*.conf)
 
 <!--反向代理虚拟主机的配置-->
 server {
@@ -16,8 +17,9 @@ server_name com.nginx.tms;
 	#nginx服务器向后端服务器发出write请求后的超时时间，默认为60
 	proxy_send_timeout 60;
 	#nginx获取服务器接收到客户端请求的请求头信息，将新的请求头发送给被代理服务器
-	proxy_set_header Host $host;
-	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header Host $host; //主机名
+	proxy_set_header X-Real-IP $remote_addr;//真实客户端ip
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;//真实接受请求的服务端ip
 	}
 }
 <!--被代服务器的ip地址和端口号-->
