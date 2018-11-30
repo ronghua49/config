@@ -239,10 +239,120 @@ public class MovieControllor {
 
 	}
 	
-	@GetMapping("/echarts")
-	public String echarts() {
-		return "echars";
-		
+	@GetMapping("/model/download")
+	public void modelDownload(HttpServletResponse resp) throws NotFoundException, IOException {
+
+		File file = new File("D:\\excel\\模板.xls");
+		if (file.exists()) {
+			resp.setContentType("application/octet-stream");
+			// 添加响应头 传入前端
+			resp.addHeader("Content-Disposition",
+					"attachment; filename=" + new String("模板".getBytes("GBK"), "ISO8859-1") + ".xls");
+			InputStream in = new FileInputStream(file);
+			OutputStream out = resp.getOutputStream();
+
+			IOUtils.copy(in, out);
+			out.flush();
+			out.close();
+			in.close();
+
+		} else {
+			throw new FileNotFoundException("路资源不存在");
+		}
+
 	}
+
+	// excel 导入数据库
+	@PostMapping("/excel/import")
+	@ResponseBody
+	public  JsonResponse excelImport(@RequestParam("file") MultipartFile file, HttpServletRequest request)
+			throws IllegalStateException, IOException {
+		if (!file.isEmpty()) {
+			
+			String fileName = file.getOriginalFilename();
+
+			String extension = FilenameUtils.getExtension(fileName);
+			
+		
+			String savePath = request.getSession().getServletContext().getRealPath("\\temp");
+			File targetPackage = new File(savePath);
+			if (!targetPackage.exists()) {
+				targetPackage.mkdirs();
+			}
+			File targetFile = new File(targetPackage,fileName);
+			
+			InputStream in = file.getInputStream();
+			OutputStream out = new FileOutputStream(targetFile);
+			
+			IOUtils.copy(in, out);
+			out.flush();
+			out.close();
+			in.close();
+			
+			
+			if ("xls".equals(extension)) {
+				List<List<Object>> read2003Excel = ExcelImportUtil.read2003Excel(targetFile);
+				
+				//得到对应值
+				List<Movie> movieList=transExcelDataToMovie(read2003Excel);
+				movieService.movieBatchInsert(movieList);
+			
+				return JsonResponse.success("导入成功");
+				
+			} else if("xlsm".equals(extension)){
+				List<List<Object>> read2007Excel = ExcelImportUtil.read2007Excel(targetFile);
+				List<Movie> movieList=transExcelDataToMovie(read2007Excel);
+				movieService.movieBatchInsert(movieList);
+				return JsonResponse.success("导入成功");
+				
+			}else {
+				
+				return JsonResponse.fail("请选择正确的文件格式");
+			}
+
+		}
+		return JsonResponse.fail("请选择上传文件！");
+			
+	}
+
+	/**
+	 * 把excel数据转换为movie
+	 * @param read2003Excel
+	 * @return movielist
+	 */
+	private List<Movie> transExcelDataToMovie(List<List<Object>> read2003Excel) {
+		ArrayList<Movie> movieList = new ArrayList<>();
+		for(int j=0;j<read2003Excel.size();j++) {
+			if(j==0) {
+				continue;
+			}
+			Movie movie = new Movie();
+			List<Object> row = read2003Excel.get(j);
+			
+			for(int i=0;i<row.size();i++) {
+				if(row.get(i)==null) {
+					continue;
+				}
+				if(i==0) {
+					movie.setMovieName((String) row.get(i));
+				}else if(i==1) {
+					movie.setDirectorName((String) row.get(i));
+				}else if(i==2) {
+					movie.setArea((String) row.get(i));
+				}else if (i==3){
+					movie.setContent((String) row.get(i));
+				}else if (i==4){
+					movie.setScanNum(Integer.valueOf((String) row.get(i)) );
+				}else{
+					movie.setReplyNum(Integer.valueOf((String) row.get(i)));
+				}
+				
+			}
+			movieList.add(movie);
+			
+		}
+		return movieList;
+	}
+
 	
 }
