@@ -16,6 +16,7 @@ prefix="localhost_access_log" suffix=".txt"
 pattern="%h %l %u %t "%r" %s %b" />
 </Host>
 <!--一个tomcat两个端口部署不同项目-->
+<!-- linux 上部署需要 win 配置hosts 进行域名解析-->
 复制service  name= Catalina2  
 更改前两个端口 保证和前一个service节点不重复
  
