@@ -1,4 +1,12 @@
 $(function(){
+
+			//普通jquery自带简易ajax 
+
+			$.get("/search",{"name":"rose","age":23}).done(function(res){
+			...
+			}).fail(function(){
+			...
+			});
 			
 			$("#loginBtn").click(function(){
 				$("#loginForm").submit();
