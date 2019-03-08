@@ -3,7 +3,7 @@
 
 <!--反向代理虚拟主机的配置-->
 server {
-<!--nginx虚拟主机的端口号-->
+<!--访问此server的端口-->
 listen 80;
 <!--nginx虚拟主机代理的域名-->
 server_name com.nginx.tms;
