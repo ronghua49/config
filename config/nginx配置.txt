@@ -5,10 +5,10 @@
 server {
 <!--访问此server的端口-->
 listen 80;
-<!--nginx虚拟主机代理的域名-->
+<!--nginx虚拟主机代理的域名,此域名要绑定本机地址-->
 server_name com.nginx.tms;
 	location / {
-	#被代理服务器的地址
+	#通过哪个名字进行代理
 	proxy_pass http://tms;
 	#nginx服务器与后端服务器建立连接的超时时间，默认为60s
 	proxy_connect_timeout 60;
