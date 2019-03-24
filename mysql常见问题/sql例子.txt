@@ -1,0 +1,29 @@
+//删除数据库中 同一分组的 历史数据  只留下最新一条记录
+//思路：首先查询分组后的最大时间和分组字段  其次匹配原表记录查出匹配id  最后删除不在此内id
+DELETE
+FROM
+	titles_test
+WHERE
+	id NOT IN (
+		SELECT
+			b.id
+		FROM
+			(
+				SELECT
+					id
+				FROM
+					titles_test a
+				INNER JOIN (
+					SELECT
+						max(from_date) AS from_date,
+						emp_no
+					FROM
+						titles_test
+					GROUP BY
+						emp_no
+					ORDER BY
+						max(from_date) DESC
+				) b ON a.from_date = b.from_date
+				AND a.emp_no = b.emp_no
+			) b
+	);
