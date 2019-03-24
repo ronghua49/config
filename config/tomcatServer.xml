@@ -1,3 +1,7 @@
+<!-- 配置解决中文乱码-->
+<Connnector useBodyEncodingForURI = "true" URIEncoding = "utf-8">
+
+
 <!-- 复制host节点 修改name 属性自己设置域名导致-->
 <Host name="manager.movie.com" appBase="webapps"
 unpackWARs="true" autoDeploy="true">
