@@ -1,0 +1,123 @@
+• $ apt-get install make gcc tcl （或者 yum -y install make gcc tcl）
+• $ wget http://download.redis.io/releases/redis-3.2.8.tar.gz
+• $ tar xzf redis-3.2.8.tar.gz
+• $ cd redis-3.2.8
+• $ make MALLOC=libc
+• $ make test
+• $ make install
+
+
+• 启动
+• $ redis-server [/path/redis.conf]
+
+集群安装
+
+• 在/usr/local中创建文件夹redis-cluster
+mkdir redis-?...
+分别在文件夹中创建 2个子文件夹，命名 redis-6378、redis-6379;redis-6388,redis-6389;redis-6398,redis-6399
+
+port 6000 ~ 6001 bind 192.168.1.110  （redis服务器的IP地址，一定要绑定！）
+daemonize yes
+cluster-enabled yes
+cluster-config-file nodes-600?.conf
+
+
+• 安装ruby
+
+官网下载 ruby 2.2.3.tar.gz以上版本
+解压
+tar -xvf ruby-2.2.3.tar.gz
+
+cd ruby2.2.3
+编译 安装
+make && make install
+
+安装zlib库
+ yum install zlib-devel
+cd  /usr/local/ruby-2.5.1/ext/zlib
+ruby extconf.rb
+安装 OpenSSL 库
+ yum install openssl-devel
+ cd  /usr/local/ruby-2.3.4/ext/openssl
+ ruby extconf.rb
+ vim Makefile  在文件头部添加 top_srcdir = ../.. 
+ • 安装ruby redis gem
+gem install redis
+
+
+• 到redis源代码中进行创建集群
+cd  ~/redis-3.2.10/src
+./redis-trib.rb create --replicas 1 172.17.213.114:6379 172.17.213.114:6378 172.17.213.113:6388 172.17.213.113:6389 172.17.213.112:6398 172.17.213.112:6399
+成功显示：
+Using 3 masters: 192.168.1.110:6000 192.168.1.110:6001 192.168.1.110:6002 Adding replica 192.168.1.110:6003 to 192.168.1.110:6000 Adding replica 192.168.1.110:6004 to 192.168.1.110:6001 Adding replica 192.168.1.110:6005 to 192.168.1.110:6002
+ 
+开机启动
+
+根据启动脚本要求，将某个节点的配置文件以端口为名复制一份到指定目录，这里复制到/etc/redis_cluster
+cd /etc
+mkdir redis_cluster
+cd redis_cluster
+cp /tmp/frank/redis/redis-3.2.1/redis_cluster/* /etc/redis_cluster/
+
+在/etc/init.d目录下面新建启动脚本并且命名为redis6379  
+编辑redis6379 :
+
+#!/bin/sh
+#
+# Simple Redis init.d script conceived to work on Linux systems
+# as it does use of the /pro filesystem.
+# chkconfig:2345 90 10
+# description:Redis is a persistent key-value database
+
+REDISPORT=6379
+EXEC=/usr/local/redis-3.2.8/src/redis-server
+CLIEXEC=/usr/local/redis-3.2.8/src/redis-cli
+
+PIDFILE=/var/run/redis_${REDISPORT}.pid
+CONF="/etc/redis_cluster/${REDISPORT}.conf"
+
+case "$1" in
+   start)
+   if [ -f $PIDFILE ]
+   then
+       echo "$PIDFILE exists,process is already running or crashed"
+   else
+       echo "Starting Redis server $REDISPORT ..."
+       $EXEC $CONF
+   fi  
+   ;;
+   stop)
+   if [ ! -f $PIDFILE ]
+   then
+       echo "$PIDFILE does not exit,process is not running"
+   else
+       PID=$(cat $PIDFILE)
+       echo "Stopping"
+       $CLIEXEC -p $REDISPORT shutdow
+       while [ -x /proc/${PID}]
+       do
+           echo "Waiting for Redis to shutdown ..."
+           sleep 1
+       done
+       echo "Redis stopped"
+   fi
+   ;;
+   *)
+   echo "Please use start or stop as first argument"
+   ;;
+esac
+
+
+修改启动文件的权限
+chmod 777 /etc/init.d/redis6379
+
+设定开机启动服务
+chkconfig redis6379 on  
+
+（每个集群的redis.conf 添加密码）设置密码：
+
+requirepass 123456 
+
+
+
+
