@@ -1,0 +1,102 @@
+-- mysql 的分组统计（所谓的纵横列转换）
+
+
+SELECT dat AS '日期',
+SUM(IF(project = '采购合同',sum1,0)) AS '采购合同',
+SUM(IF(project = '采购订单',sum1,0)) AS '采购订单',
+
+SUM(IF(project = '大合同',sum1,0)) AS '大合同',
+SUM(IF(project = '大合同分配',sum1,0)) AS '大合同分配',
+SUM(IF(project = '日常合同',sum1,0)) AS '日常合同',
+SUM(IF(project = '集中发货',sum1,0)) AS '集中发货',
+SUM(IF(project = '库存调拨',sum1,0)) AS '库存调拨',
+SUM(IF(project = '当此退货',sum1,0)) AS '当此退货',
+SUM(IF(project = '商业退货',sum1,0)) AS '商业退货',
+SUM(IF(project = '发货推送wms',sum1,0)) AS '发货推送wms',
+SUM(IF(project = '发货推送sap',sum1,0)) AS '发货推送SAP',
+"" AS 'WMS出库',"" AS 'SAP开票'
+
+
+
+
+
+
+FROM (
+SELECT 
+  '采购合同' AS project,COUNT(*)AS "sum1",DATE(filingDate) AS "dat" 
+FROM
+  `scm_cg_procurementcontract` a WHERE  approvalState = '2'  AND DATE(filingDate)>="2019-7-15"  GROUP BY DATE(filingDate) 
+  UNION ALL 
+  
+  
+SELECT 
+  '采购订单' AS project,COUNT(*)AS "sum1",DATE(orderDate) AS "dat" 
+FROM
+  `scm_cg_procurementorder` a WHERE  approvalState = '2'  AND DATE(orderDate)>="2019-7-15"  GROUP BY DATE(orderDate)   
+  
+ UNION ALL 
+  SELECT 
+  '大合同' AS project,COUNT(*)AS "sum1",DATE(entryDate) AS "dat" 
+FROM
+  `scm_xs_bigcontract` a WHERE  approvalState = '2'  AND DATE(entryDate)>="2019-7-15"  GROUP BY DATE(entryDate)
+    UNION ALL 
+  
+  
+  
+SELECT 
+  '大合同分配' AS project,COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_xs_bigcontractallot` a WHERE  approvalState = '2'  AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+  
+    UNION ALL 
+  SELECT 
+  '日常合同' AS project,COUNT(*)AS "sum1",DATE(entryDate) AS "dat" 
+FROM
+  `scm_xs_everydaycontract` a WHERE  approvalState = '2'  AND DATE(entryDate)>="2019-7-15"  GROUP BY DATE(entryDate)
+  
+    UNION ALL 
+   SELECT 
+ '集中发货' AS project, COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_xs_focussend` a WHERE  approvalState = '2'  AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+    UNION ALL 
+  
+    
+  SELECT 
+  '库存调拨' AS project,COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_kc_allotmaster` a WHERE  approvalState = '2'  AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+  
+  UNION ALL 
+    
+
+  
+    SELECT 
+ '当此退货' AS project, COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_fh_gradeselesreturnmaster` a WHERE  approvalState = '2'  AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+  
+    UNION ALL 
+
+  
+  
+    SELECT 
+ '商业退货' AS project, COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_fh_marketselesreturnmaster` a WHERE  approvalState = '2'  AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+  
+    UNION ALL 
+    SELECT 
+   '发货推送wms' AS project,COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_fh_shipmentsdatailmaster` a WHERE  approvalState = '2' AND isToWms = '1' AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+  
+  
+  UNION ALL 
+      SELECT 
+   '发货推送SAP' AS project,COUNT(*)AS "sum1",DATE(createDate) AS "dat" 
+FROM
+  `scm_cw_tosapdiscount` a INNER JOIN `scm_fh_shipmentsdatailmaster` b ON b.id = a.shipmentsdatailmasterId WHERE a.isToSap = '1' AND DATE(createDate)>="2019-7-15"  GROUP BY DATE(createDate)
+    
+  
+  )a GROUP BY a.dat ORDER BY a.dat
