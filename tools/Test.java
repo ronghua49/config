@@ -21,7 +21,6 @@ import java.io.IOException;
 @Api(tags = "Test 测试")
 public class Test extends BaseController {
 
-
     @GetMapping("/test2")
     @ApiOperation(value = "集中发货商品表数据列表", httpMethod = "GET", notes = "获取集中发货商品表列表")
     public ScmXsBigContract test2(@RequestParam String name) {
@@ -37,7 +36,6 @@ public class Test extends BaseController {
         scmXsBigContract.setEntryPeople(scmXsBigContract.getEntryPeople()+"test3-->");
         return scmXsBigContract;
     }
-
 
     @PostMapping("/test4")
     @ApiOperation(value = "集中发货商品表数据列表", httpMethod = "POST", notes = "获取集中发货商品表列表")
@@ -60,7 +58,6 @@ public class Test extends BaseController {
         ScmXsBigContract body = entity.getBody();
         return body;
     }
-
     @PostMapping("/test5")
     @ApiOperation(value = "集中发货商品表数据列表", httpMethod = "POST", notes = "获取集中发货商品表列表")
     public ScmXsBigContract test5(HttpServletRequest request) {
