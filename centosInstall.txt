@@ -24,3 +24,8 @@ flush privileges # 刷新 权限
 #设置允许远程登录
  GRANT ALL PRIVILEGES ON *.* TO ‘root’@‘%’ IDENTIFIED BY ‘你的密码’; 
  service mysql restart
+
+#安装tomcat
+yum -y install tomcat
+rpm -q tomcat # 查看是否安装成功
+
