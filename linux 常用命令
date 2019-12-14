@@ -6,3 +6,4 @@ kill -9 pid                         -- 强制杀死进程号
 nohup jvaa -jar xx.jar >log/xx.log   -- 后台启动jar
 
 git pull origin master --allow-unrelated-histores 合并两个独立启动仓库历史（将远程仓库和本地仓库分支合并历史并拉取到本地仓库）
+whereis 程序名                      -- 查看程序安装位置
