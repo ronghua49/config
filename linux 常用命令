@@ -2,8 +2,20 @@ netstat -lutnp|grep 端口号           --查看端口号进程详情
 ps -ef | grep 进程名                 --查看进程pid
 netstat -nap | grep 进程pid          --查看进程pid占用端口号
 kill -9 pid                         -- 强制杀死进程号
-
+whereis 程序名                      -- 查看程序安装位置
 nohup jvaa -jar xx.jar >log/xx.log   -- 后台启动jar
 
-git pull origin master --allow-unrelated-histores 合并两个独立启动仓库历史（将远程仓库和本地仓库分支合并历史并拉取到本地仓库）
-whereis 程序名                      -- 查看程序安装位置
+
+#git
+git pull origin master --allow-unrelated-histories 合并两个独立启动仓库历史（将远程仓库和本地仓库分支合并历史并拉取到本地仓库）
+ssh-keygen -t rsa -C “您的邮箱地址”    一直回车生成私钥和公钥  （ 记住账号密码）
+将 C:\Users\A\.ssh 文件夹下的id_rsa.pub 文件拷贝到 github  新建公钥输入框内
+git config --global credential.helper store  记住用户名密码
+vim ~/.gitconfig  检出是否成功 最后一行添加  helper = store
+git checkout -b 分支名称   创建并合并分支
+git branch 分支名  创建分支
+git branch -d 分支名称  删除分支
+git push origin --delete 分支名称   删除远程分支
+
+
+
