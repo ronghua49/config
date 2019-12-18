@@ -58,4 +58,13 @@ export PATH=$PATH:$JAVA_HOME/bin:$M2_HOME/bin
 source /etc/profile  刷新环境变量
 mvn -v  检查
 
+#centos 下安装 node.js
+wget https://nodejs.org/dist/v8.11.4/node-v8.11.4-linux-x64.tar.xz  下载node.tar.gz
+tar -xvf node-v8.11.4-linux-x64.tar.xz  解压
+ln -s /usr/local/node8/bin/node  /usr/bin/node  建立软连接到系统默认环境变量地址中
+ln -s /usr/local/node8/bin/npm  /usr/bin/npm 
+node -v  npm -v   测试
+
+
+
 
