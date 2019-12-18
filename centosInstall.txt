@@ -65,6 +65,10 @@ ln -s /usr/local/node8/bin/node  /usr/bin/node  建立软连接到系统默认�
 ln -s /usr/local/node8/bin/npm  /usr/bin/npm 
 node -v  npm -v   测试
 
+#centos 下安装nginx 
+yum install nginx 
+cd /uar/sbin/nginx   ./nginx  启动
+vim /etc/nginx/nginx.conf  修改配置文件
 
 
 
