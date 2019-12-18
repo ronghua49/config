@@ -17,5 +17,6 @@ git branch 分支名  创建分支
 git branch -d 分支名称  删除分支
 git push origin --delete 分支名称   删除远程分支
 
-
-
+git core 下添加以下配置 解决early EOF index-pack failed 问题
+[core]
+compression = -1    
