@@ -4,6 +4,7 @@ netstat -nap | grep 进程pid          --查看进程pid占用端口号
 kill -9 pid                         -- 强制杀死进程号
 whereis 程序名                      -- 查看程序安装位置
 nohup jvaa -jar xx.jar >log/xx.log   -- 后台启动jar
+taskkill /im nginx.exe /f           -- win强制杀掉xx.exe进程
 
 
 #git
@@ -26,3 +27,5 @@ packedGitWindowSize = 512m
 deltaCacheSize = 2047m 
 packSizeLimit = 2047m 
 windowMemory = 2047m 
+
+
