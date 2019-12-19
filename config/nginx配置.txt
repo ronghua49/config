@@ -52,6 +52,11 @@ server{
 	location /image {
 		root /var/html;
 	}
+        // 简单部署前端vue项目
+	location /{
+	    root  E:/haohua/xyjweb/dist;  #前端打包后地址
+	    index  index.html index.htm;
+	}
 	
    #location ~ \.jpg$ {
 	#	root /var/html/image;
