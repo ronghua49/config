@@ -32,8 +32,13 @@ flush privileges # 刷新 权限
 quit
 service mysqld restart
 mysql -uroot -proot #用户名密码登录
+#登陆后从新修改密码  修改validate_password_policy参数的值
+set global validate_password_policy=0;
+set global validate_password_length=1;
+alter user 'root'@'localhost' identified by '123456'; #修改密码
+
 #设置允许远程登录
- GRANT ALL PRIVILEGES ON *.* TO ‘root’@‘%’ IDENTIFIED BY ‘你的密码’; 
+grant all privileges on *.* to 'root'@'%' identified by '123456'
  service mysql restart
 
 #安装tomcat
