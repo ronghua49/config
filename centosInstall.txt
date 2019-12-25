@@ -13,14 +13,25 @@ wget -i -c https://repo.mysql.com//mysql80-community-release-el7-3.noarch.rpm
 yum -y install mysql80-community-release-el7-3.noarch.rpm
 yum -y install mysql-community-server
 # mysql 的启动 和停止
-service mysql start 启动
-service mysql restart  重启
-service mysql stop停止服务 
-service mysql start启动服务
-
+service mysqld start 启动
+service mysqld restart  重启
+service mysqld stop停止服务 
+#配置开机启动
+chkconfig --add mysql
+chkconfig mysqld on
+#启动报错解决
+rm -fr /var/lib/mysql/*
+rm /var/lock/subsys/mysqld 
+killall mysqld
 #更改密码
-update user set password=password(‘qwe123′) where user=’root’;
+mysqld_safe --user=mysql --skip-grant-tables --skip-networking &
+mysql -u root mysql
+use mysql
+update user set authentication_string=password('newpassword') where user='root';
 flush privileges # 刷新 权限
+quit
+service mysqld restart
+mysql -uroot -proot #用户名密码登录
 #设置允许远程登录
  GRANT ALL PRIVILEGES ON *.* TO ‘root’@‘%’ IDENTIFIED BY ‘你的密码’; 
  service mysql restart
