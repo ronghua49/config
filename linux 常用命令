@@ -8,6 +8,8 @@ taskkill /im nginx.exe /f           -- win强制杀掉xx.exe进程
 
 
 #git
+git config --global user.name "bryan sun"
+git config --global user.email "hitsjt@gmail.com"
 git pull origin master --allow-unrelated-histories 合并两个独立启动仓库历史（将远程仓库和本地仓库分支合并历史并拉取到本地仓库）
 ssh-keygen -t rsa -C “您的邮箱地址”    一直回车生成私钥和公钥  （ 记住账号密码）
 将 C:\Users\A\.ssh 文件夹下的id_rsa.pub 文件拷贝到 github  新建公钥输入框内
