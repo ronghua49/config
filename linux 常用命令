@@ -20,7 +20,16 @@ git branch 分支名  创建分支
 git branch -d 分支名称  删除分支
 git push origin --delete 分支名称   删除远程分支
 
-git core 下添加以下配置 解决early EOF index-pack failed 问题
+#git 下载单独文件和文件夹
+git init test 
+cd test 
+git config core.sparsecheckout true //设置允许克隆子目录
+echo 'chapter4*' >> .git/info/sparse-checkout  //设置要克隆的子目录路径
+git remote add origin https://github.com/forezp/SpringCloudLearning.git // 添加远程源
+git pull origin master // 下载该目录到本地
+
+
+#git core 下添加以下配置 解决early EOF index-pack failed 问题
 [core] 
 compression = 9
 packedGitLimit = 512m 
