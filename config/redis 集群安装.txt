@@ -51,7 +51,7 @@ cd  ~/redis-3.2.10/src
 成功显示：
 Using 3 masters: 192.168.1.110:6000 192.168.1.110:6001 192.168.1.110:6002 Adding replica 192.168.1.110:6003 to 192.168.1.110:6000 Adding replica 192.168.1.110:6004 to 192.168.1.110:6001 Adding replica 192.168.1.110:6005 to 192.168.1.110:6002
  
-开机启动
+
 
 根据启动脚本要求，将某个节点的配置文件以端口为名复制一份到指定目录，这里复制到/etc/redis_cluster
 cd /etc
@@ -59,7 +59,7 @@ mkdir redis_cluster
 cd redis_cluster
 cp /tmp/frank/redis/redis-3.2.1/redis_cluster/* /etc/redis_cluster/
 
-在/etc/init.d目录下面新建启动脚本并且命名为redis6379  
+在/etc/init.d目录下面新建启动脚本并且命名为redis6379   
 编辑redis6379 :
 
 #!/bin/sh
@@ -75,6 +75,8 @@ CLIEXEC=/usr/local/redis-3.2.8/src/redis-cli
 
 PIDFILE=/var/run/redis_${REDISPORT}.pid
 CONF="/etc/redis_cluster/${REDISPORT}.conf"
+
+#开机启动脚本添加
 
 case "$1" in
    start)
