@@ -86,5 +86,11 @@ nginx -s reload 　　配置文件修改重装载命令
 nginx -h 　　查看帮助信息
 nginx -s reopen 　　打开日志文件
 
-
+#nginx 部署前端的一些坑点
+1.部署dist 前保证index.html 在本地可以打开
+2.若打不开 修改config/index.js里的assetsPublicPath的字段，初始项目是/，现在改为./
+3.修改build 下面path.resolve(_dirname,'../dist'),
+assetsSubDirevtory:'static',
+assetsPublicPath:'./'
+4.修改index.html 所有引用路径前缀为  ./
 
