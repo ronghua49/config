@@ -1,5 +1,5 @@
 在/usr/local/nginx/vhost下新建代理或者反向代理的虚拟主机conf配置文件
-(需要在主配置文件 inculd  /usr/local/nginx/vhost/*.conf)
+(需要在主配置文件 include  /usr/local/nginx/vhost/*.conf)
 
 <!--反向代理虚拟主机的配置-->
 server {
