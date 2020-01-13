@@ -75,5 +75,16 @@ server{
 }
 
 
+#nginx 常用命令
+nginx -t 　　验证(nginx.conf)配置文件是否有语法错误
+nginx -V 　　查看Nginx的版本号
+start nginx 　　启动Nginx (windows下start nginx)
+nginx -c /usr/local/nginx/conf/nginx.conf 　　启动nginx
+nginx -s stop 　　快速停止或关闭Nginx
+nginx -s quit 　　正常停止或关闭Nginx
+nginx -s reload 　　配置文件修改重装载命令
+nginx -h 　　查看帮助信息
+nginx -s reopen 　　打开日志文件
+
 
 
