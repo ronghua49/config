@@ -1,0 +1,13 @@
+# centos 修改yum源
+
+mount /dev/sr0 /mnt   centos挂载镜像路径mnt
+rm -rf /etc/yum.repos.d/* 删除源yum镜像源
+vi /etc/yum.repos.d/mnt.repo  编辑yum源
+[centos]
+name=mnt_centos
+baseurl=file:///mnt
+gpgcheck=0
+enabled=1
+
+
+

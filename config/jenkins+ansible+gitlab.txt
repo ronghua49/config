@@ -1,0 +1,199 @@
+一、安装流程
+	环境准备，操作系统，centos7 eple源 gitlan-ce源 Jenkins安装包
+	关闭防火墙
+	systemctl stop firewalld 
+	systemctl disable firewalld
+	关闭seLinux
+	sed -i 's@SELINUX=permissive@SELINUX=disabled@' /etc/sysconfig/selinux
+	reboot 使配置的selinux生效
+	1.1、安装gitlab
+		使用rpm包安装，可以选择gitlab的版本，yum源安装是最新的版本，如果要汉化yum源安装的，可能无法成功，gitlab汉化版本
+		会低于yum的版本
+		安装依赖环境，yum -y install curl policycoreutils openssh-server openssh-clients postfix patch
+		配置gitlab的yum源
+		vim /etc/yum.repos.d/gitlab-ce.repo
+			[gitlab-ce]
+			name=Gitlab CE Repository
+			baseurl=https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el$releasever/
+			gpgcheck=0
+			enabled=1
+		yum makecache fast
+		yum -y install gitlab-ce
+		开启邮件服务，每次操作代码，可以得到gitlab的邮件通知
+		systemctl enable postfix
+		systemctl start postfix
+		配置gitlab的证书
+		mkdir -p /etc/gitlab/ssl
+		openssl genrsa -out "/etc/gitlab/ssl/gitlab.example.com.key" 2048
+		openssl req -new -key "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.csr"
+		给证书签名
+		openssl x509 -req -days 365 -in "/etc/gitlab/ssl/gitlab.example.com.csr" -signkey "/etc/gitlab/ssl/gitlab.example.com.key" -out "/etc/gitlab/ssl/gitlab.example.com.crt"
+		创建pem证书
+		openssl dhparam -out /etc/gitlab/ssl/dhparam.pem 2048
+		把证书的权限设置为600
+		chmod 600 *
+		修改gitlab的配置文件
+		vim /etc/gitlab/gitlab.rb
+		把external_url "http://gitlab.example.com" 改为external_url "https://gitlab.example.com"
+		搜索 redirect_http_to_https 把注释去掉，值为true
+		nginx["redirect_http_to_https"] = ture
+		搜索ssl_certificate,把注释去掉，修改证书路径
+		nginx["ssl_certificate"] = '/etc/gitlab/ssl/gitlab.example.com.crt'
+		nginx["ssl_certificate_key"] = '/etc/gitlab/ssl/gitlab.example.com.key'
+		搜索dhparam添加pem证书
+		nginx['ssl_dhparam'] = '/etc/gitlab/ssl/dhparam.pem'
+		初始化gitlab的配置文件
+		gitlab-ctl reconfigure
+		修改gitlab中的nginx的配置文件
+		vim /var/opt/gitlab/nginx/conf/gitlab-http.conf
+		在server上下文中添加rewrite
+		rewrite ^(.*)$ https://$host$1 permanent;
+		启动gitlab,保证8080端口没有被占用
+		gitlab-ctl restart 
+		gitlab的默认用户为root，密码为自定义
+		因为gitlab的clone地址为https所以，clone代码的时候要设置https为false，
+		git -c https.sslverify=false clone 仓库的地址
+		创建分支
+		git checkout -b release-1.0
+		rpm安装错误Ran sysctl -e --system returned 255的解决，可能怒会遇到的，创建所需的文件并把参数添加相应的文件
+		root@gitlab:~# cat /opt/gitlab/embedded/etc/90-omnibus-gitlab-*
+		kernel.sem = 250 32000 32 262
+		kernel.shmall = 4194304
+		kernel.shmmax = 17179869184
+		net.core.somaxconn = 1024
+		
+		gitlab 常用命令
+		sudo gitlab-ctl start    # 启动所有 gitlab 组件；
+		sudo gitlab-ctl stop        # 停止所有 gitlab 组件；
+		sudo gitlab-ctl restart        # 重启所有 gitlab 组件；
+		sudo gitlab-ctl status        # 查看服务状态；
+		sudo gitlab-ctl reconfigure        # 启动服务；
+		sudo vim /etc/gitlab/gitlab.rb        # 修改默认的配置文件；
+		gitlab-rake gitlab:check SANITIZE=true --trace    # 检查gitlab；
+		sudo gitlab-ctl tail        # 查看日志；
+
+	1.2、gitlab的汉化步骤（最新版在用户设置里设置切换中文）
+		下载汉化包，git clone https://gitlab.com/xhang/gitlab.git这是git地址，下载网络可能比较慢，可以用科学上网下载，
+		查看自己的版本，注意如果是yum源安装，可能无法汉化，因为gitlab中文社区的版本和最新的版本会延迟一段时间
+		[root@jenkins ~]# head -1 /opt/gitlab/version-manifest.txt
+        gitlab-ce 12.3.0
+		进入刚才clone下来的gitlab目录，用diff将英文原版与中文版的对比生成.diff文件
+		git diff v12.3.0 v12.3.0-zh  > ../v12.3.0-zh.diff
+		停止gitlab
+		gitlab-ctl stop
+		将刚才的diff文件做为补丁导入到gitlab中
+		patch -d /opt/gitlab/embedded/service/gitlab-rails -p1 <  ../v10.8.4-zh.diff
+		启动gitlab就能看到熟悉的中文啦
+		gitlab-ctl start
+		问题解决：
+			访问web页面时出现502错误
+            gitlab-ctl start 
+            gitlab-ctl reconfigure
+            这个错误饱受诟病，在启动gitlab的时候执行reconfigure之后就可以了。
+	1.3、安装ansible
+		基于python虚拟环境的安装
+		安装解释器python，tar网上自行下载
+		./configure --prefix=/opt/python --with-ensurepip=install --enable-share LDFLAGS="-wl -rpath /opt/python/lib"
+		如果你的服务器仅仅是一台ansible运维机器，直接可以在服务器上安装，可以用yum安装也可以用编译的形式安装，
+		如果服务器上有其他的中间件和ansible所依赖的python环境一样，可以在python虚拟环境中安装，这需要一定的python基础，
+		ansible常用模块为，copy shell command(默认的) yum cron unarchive file service 具体用法如下例子
+
+
+
+		playbooks的目录结构，
+		inventory
+			testenv
+
+		roles
+			testbox
+				tasks
+					main.yml
+		deploy 
+		禁止 Gitlab 开机自启动：
+
+
+                             systemctl disable gitlab-runsvdir.service
+                             启用 Gitlab 开机自启动：
+
+
+                           systemctl enable gitlab-runsvdir.service
+ 
+	1.4、Jenkins组件
+		Jenkins的安装很简单，3中方式，yum war包  源码包编译安装。需要依赖jdk1.8以上版本
+		pipeline的语法介绍以及具体实例，主要是groovy语言
+		pipeline{
+		  agnet any
+		  environment{#全局变量
+		  	PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+		  	host="192.168.1.2"
+		  	user="deploy"
+		  }
+		  stages{
+		    environment{#某个stage的变量,局部
+		      PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+		    }
+		  	  stage('build'){
+		  	  	steps{
+		  	  	  sh "cat $host"
+		  	  	  echo $deploy
+		  	  	  script{
+		  	  	    def servers=['192.168.1.2','192.168.1.3']
+		  	  	    for (int i=0;i<servers.size();i++){
+                        echo "${servers[i]} server"
+		  	  	    }
+		  	  	  }
+		  	  	}
+		  	  }
+		  }
+		}
+	    pipeline的具体实例
+        #!groovy
+        pipeline {
+        	agent {node {label 'master'}}
+        	environment {
+        		PATH="/bin:/sbin:/usr/bin/:/usr/sbin:/usr/local/bin"
+        	}
+        	parameters {
+        		choice(
+        			choices: 'dev\nprod',
+        			description :'choose deploy environment',
+        			name: 'deploy_env'
+        		)
+        		string(name: 'version',defaultValue: '1.0.0',description: 'bulid version')
+        	}
+        	stages {
+        		stage('checkout test repo') {
+        			steps {
+        				sh 'git config --global https.sslverify false'
+        				dir ("${env.WORKSPACE}") {
+        					git branch: 'master',credentialsId: '6eba3867-9e33-4da9-b205-ba5289eef464',url: 'https://gitlab.example.com/root/lgy.git'
+        				}
+        			}
+        		}
+        		stage('print env variable') {
+        			steps {
+        				dir('${env.WORKSPACE}') {
+        					sh """
+        						echo "[info] print env variable "
+        						echo "current deployment environment is $deploy_env  " >> test.txt
+        						echo "current deployment version is $version  " >> test.txt
+        						echo "[info] done......"
+        					"""
+
+        				}
+        			}
+        		}
+        		stage('check test.txt') {
+        			steps{
+        				dir('${env.WORKSPACE}') {
+        					sh """
+        						if [ -s test.txt ];then
+        							cat test.txt
+        						else
+        							echo 'text.txt is empty'
+        					"""
+        				}
+        			}
+        		}
+        	}
+        }
