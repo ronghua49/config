@@ -1,4 +1,4 @@
--- git提交远程 jenkins 自动构建发布服务端脚本 test.sh
+-- git提交gitlab jenkins 自动构建发布服务端脚本 单独拉取项目 test.sh
 #!/bin/bash
 dir=/opt
 source /etc/profile
@@ -12,8 +12,10 @@ cd $1
 mvn install
 cd target
 jar_name=`ls *.jar`
-pid=`ps -ef | grep $jar_name| head -n1 | awk -F' ' '{print $2}'`
+pid=`ps -ef |grep $jar_name |grep -v grep | awk '{print $2}'`
+if [ "$pid" != "" ];then
 kill -9 $pid
+fi
 BUILD_ID=dontKillMe
 nohup java -jar  $jar_name > /var/log/$1.log &
 
@@ -21,5 +23,22 @@ nohup java -jar  $jar_name > /var/log/$1.log &
 使用poll scm 配置Schedule  使用corn 表达式   * * * * *
 build 下 填写 execute Shell  参数对应排列
 /opt/test.sh ${JOB_NAME} ronghua 12345678 ${GIT_URL} 
+
+-- git 提交github 利用jenkins 工作空间 自动构建发布项目 github_test.sh
+cd /root/.jenkins/workspace/$1
+mvn install
+cd target
+jar_name=`ls *.jar`
+pid=`ps -ef |grep $jar_name |grep -v grep | awk '{print $2}'`
+if [ "$pid" != "" ];then
+kill -9 $pid
+fi
+BUILD_ID=dontKillMe
+nohup java -jar  $jar_name > /var/log/$1.log &
+-- jenkins 自动构建command line 命令
+使用poll scm 配置Schedule  使用corn 表达式   * * * * *
+build 下 填写 execute Shell  参数对应排列
+/opt/github_test.sh ${JOB_NAME}
+
 
  
