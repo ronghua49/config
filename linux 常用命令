@@ -42,3 +42,9 @@ packSizeLimit = 2047m
 windowMemory = 2047m 
 
 
+# linux 上上传下载插件安装和使用
+yum install lrzsz
+ rz 上传文件
+ sz 下载文件  （例如：sz /data/log/error.log）
+
+
