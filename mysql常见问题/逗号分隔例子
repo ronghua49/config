@@ -1,0 +1,8 @@
+SELECT
+	SUBSTRING_INDEX( SUBSTRING_INDEX( a.serialNo, ',', b.help_topic_id + 1 ), ',',- 1 ) AS serialNo 
+FROM
+	( SELECT serialno_list AS serialNo, del_flg, id, product_no, shop_id FROM product_inventory_item_batch ) a
+	INNER JOIN mysql.help_topic AS b ON b.help_topic_id < ( length( a.serialNo ) - length( REPLACE ( a.serialNo, ',', '' ) ) + 1 ) 
+WHERE
+	1 = 1 
+	AND a.del_flg = '0' 
