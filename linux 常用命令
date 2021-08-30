@@ -1,4 +1,4 @@
-netstat -lutnp|grep 端口号           --查看端口号进程详情
+netstat -lutnp|grep 端口号           --查看端口号进程详情  (ss -ntl)
 ps -ef | grep 进程名                 --查看进程pid
 netstat -nap | grep 进程pid          --查看进程pid占用端口号
 kill -9 pid                         -- 强制杀死进程号
