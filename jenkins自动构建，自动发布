@@ -40,5 +40,13 @@ nohup java -jar  $jar_name > /var/log/$1.log &
 build 下 填写 execute Shell  参数对应排列
 /opt/github_test.sh ${JOB_NAME}
 
+-- jenkins 构建Post Steps （Run regardless of build result）例子
+#!/bin/bash
+BUILD_ID=DONTKILLME
+SHELL_SSH=root@10.10.233.24
+
+scp /root/.jenkins/workspace/qs-inventory-service-uat/shuyue_corelayer/com.shuyue.inventory-server/target/inventory-server.jar $SHELL_SSH:/home/shuyueinventory/inventory-server-bak.jar
+ssh $SHELL_SSH 'mv -f /home/shuyueinventory/inventory-server-bak.jar /home/shuyueinventory/inventory-server.jar'
+ssh $SHELL_SSH 'sh /home/shuyueinventory/server_start.sh inventory-server.jar'
 
  
